@@ -82,21 +82,6 @@ mod reqwest {
             Ok(http_response)
         }
     }
-
-    #[async_trait]
-    impl HttpClient for reqwest::blocking::Client {
-        async fn send(&self, request: Request<Vec<u8>>) -> Result<Response<Bytes>, HttpError> {
-            let request = request.try_into()?;
-            let mut response = self.execute(request)?.error_for_status()?;
-            let headers = std::mem::take(response.headers_mut());
-            let mut http_response = Response::builder()
-                .status(response.status())
-                .body(response.bytes()?)?;
-            *http_response.headers_mut() = headers;
-
-            Ok(http_response)
-        }
-    }
 }
 
 #[cfg(feature = "isahc")]
